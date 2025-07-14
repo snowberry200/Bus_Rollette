@@ -1,16 +1,27 @@
-# bus_rullette
+A Bus Reservation app with search for bus route, travel date, managed with Bloc State Management. 
+#FLUTTER(FRONT END), JAVA SPRING BOOT (BACKEND). 
+The app demonstrates: Safe GlobalKey usage patterns Custom widget composition via widget maps Proper dispose() 
+implementations to prevent leaks Responsive design with ConstrainedBox.
 
-A new Flutter project.
 
-## Getting Started
+Bus Route Finder App
+A seamless travel planning experience
 
-This project is a starting point for a Flutter application.
+Technical Overview
+This Flutter-based mobile application helps users find available bus routes between cities with intuitive date selection. Built with robust state management and clean architecture principles, it features:
 
-A few resources to get you started if this is your first Flutter project:
+Smart Search System
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+Dynamic city dropdowns with type-ahead functionality
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Date picker with built-in validation (past dates disabled)
+
+Real-time route availability checking
+
+Key Technical Features
+
+BLoC Architecture: Efficient state management for complex form interactions
+
+GlobalKey Integration: Maintains widget state across rebuilds
+
+Null-Safe Design: Prevents crashes with comprehensive validation
