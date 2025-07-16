@@ -3,19 +3,23 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class SearchValidation {
-  static Future<bool> validateSearch({
+  static bool validateSearch({
     required BuildContext context,
     required String? fromCity,
     required String? toCity,
     required DateTime? departureDate,
     required bool isLoading,
-  }) async {
+  }) {
     // Validate inputs
     if (context.mounted && isLoading == true) {
       showProgressiveBar();
     }
-    if (fromCity == null || toCity == null || departureDate == null) {
+    if (fromCity == null || toCity == null) {
       showError(context, "Please fill all fields");
+      return false;
+    }
+    if (departureDate == null) {
+      showError(context, "Please select date");
       return false;
     }
     if (fromCity.isEmpty || toCity.isEmpty) {
@@ -37,7 +41,7 @@ class SearchValidation {
 
     try {
       _showProgress(context, "Searching for routes...");
-      await Future.delayed(const Duration(seconds: 1)); // Simulate network
+      Future.delayed(const Duration(seconds: 1)); // Simulate network
 
       final route = TempDB.tableRoute.firstWhere(
         (element) => element.cityFrom == fromCity && element.cityTo == toCity,

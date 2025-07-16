@@ -1,9 +1,7 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
-import 'package:bus_rullette/datasource/temp_db.dart';
-import 'package:bus_rullette/models/but_route.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:bus_rullette/widget/search_validation.dart';
 import 'package:flutter/material.dart';
 
 part 'search_event.dart';
@@ -11,58 +9,50 @@ part 'search_state.dart';
 
 class SearchBloc extends Bloc<SearchEvent, SearchState> {
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
-  SearchBloc({required this.formKey}) : super(InitialState()) {
-    on<CityChangeEvent>(_onCityChanged);
-    on<DateChangedEvent>(_onDateChanged);
-    on<OnCitySearchButtonPressedEvent>(_onSearchButtonPressed);
+  SearchBloc({required this.formKey})
+    : super(SearchState.initial(_InitialSearchState())) {
+    on<FromCityChangeEvent>(_onFromCityChanged);
+    on<ToCityChangeEvent>(_onToCityChanged);
+    on<DateChangeEvent>(_onDateChanged);
+    on<SearchButtonPressedEvent>(_onSearchButtonPressed);
   }
 
-  void _onCityChanged(CityChangeEvent event, Emitter<SearchState> emit) {
-    emit(
-      SearchState(
-        fromCity: event.fromCity ?? state.fromCity,
-        toCity: event.toCity ?? state.toCity,
-        departureDate: state.departureDate,
-        isLoading: state.isLoading,
-        resultedState: state.resultedState,
-        errorMessage: state.errorMessage,
-      ),
+  FutureOr<void> _onFromCityChanged(
+    FromCityChangeEvent event,
+    Emitter<SearchState> emit,
+  ) {
+    emit(SearchState.initial(_SuccessSearchState(fromCity: event.fromCity)));
+  }
+
+  FutureOr<void> _onToCityChanged(
+    ToCityChangeEvent event,
+    Emitter<SearchState> emit,
+  ) {
+    emit(SearchState.initial(_SuccessSearchState(toCity: event.toCity)));
+  }
+
+  FutureOr<void> _onDateChanged(
+    DateChangeEvent event,
+    Emitter<SearchState> emit,
+  ) {
+    SearchState.initial(
+      _SuccessSearchState(departureDate: event.departureDate),
     );
   }
 
-  void _onDateChanged(DateChangedEvent event, Emitter<SearchState> emit) {
-    {
-      emit(
-        SearchState(
-          fromCity: state.fromCity,
-          toCity: state.toCity,
-          departureDate: event.departureDate,
-          isLoading: state.isLoading,
-          resultedState: state.resultedState,
-          errorMessage: state.errorMessage,
-        ),
-      );
-    }
-  }
-
-  Future<void> _onSearchButtonPressed(
-    OnCitySearchButtonPressedEvent event,
+  FutureOr<void> _onSearchButtonPressed(
+    SearchButtonPressedEvent event,
     Emitter<SearchState> emit,
-  ) async {
-    // loading state
-    emit(SearchLoading(state));
-
-    try {
-      final route = TempDB.tableRoute.firstWhere(
-        (element) =>
-            element.cityFrom == event.fromCity &&
-            element.cityTo == event.toCity,
-      );
-      emit(SearchSuccess(state: state, route: route));
-    } on SearchError {
-      emit(SearchError(state, 'No buses found for this route'));
-    } catch (e) {
-      emit(SearchError(state, 'Search failed: ${e.toString()}'));
-    }
+  ) {
+    emit(
+      SearchState.success(
+        _SuccessSearchState(
+          resultedState: SearchValidation.validateSearch,
+          fromCity: event.fromCity,
+          toCity: event.toCity,
+          departureDate: event.departureDate,
+        ),
+      ),
+    );
   }
 }
